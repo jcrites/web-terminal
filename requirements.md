@@ -14,12 +14,12 @@ Let's explain what WebTerminal seeks to achieve by comparing it to another proje
 
 ![image](https://github.com/jcrites/web-terminal/assets/88504/c6baa658-c4ec-4c3c-b792-36c64d424056)
 
-In WebTerminal, we'll build on this concept, culminating in rich hypermedia output. Since JavaScript is the language of the Web, we'll employ a TypeScript variant as the shell language (but with extensions). We might express the same command in WebTerminal like:
+This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
+
+In WebTerminal, we'll build on this concept, culminating in rich hypermedia output. Since JavaScript is the language of the Web, we'll employ a TypeScript variant as the shell language (but with extensions). We might express the same command in WebTerminal with TypeScript like:
 
 ```typescript
-ls()
-  .where(f => f.size > 10mb) // filter()
-  .orderBy(f => f.modified)
+ls().where(f => f.size > 10mb).orderBy(f => f.modified)
 ```
 
 WebTerminal will decouple program processing logic from the presentation layer. Progrmas will output structured data, and WebTerminal will take responsibility for rendering it into HTML. The raw output of this `ls` program will be a table consisting of structured data in the Amazon Ion format:
