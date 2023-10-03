@@ -10,7 +10,7 @@ WebTerminal seeks to innovate on the terminal experience by integrating modern W
 
 ### In a nutshell
 
-The Nushell project (by comparison) demonstrates its capabilities concisely by showing a simple command and output:
+Let's explain what WebTerminal seeks to achieve by comparing it to another project that's innovating in the terminal space: Nushell. Nushell demonstrates its capabilities concisely by showing a simple command and output:
 
 ![image](https://github.com/jcrites/web-terminal/assets/88504/c6baa658-c4ec-4c3c-b792-36c64d424056)
 
