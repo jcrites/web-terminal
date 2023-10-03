@@ -22,7 +22,9 @@ In WebTerminal, we'll build on this concept, culminating in rich hypermedia outp
 ls().where(f => f.size > 10mb).orderBy(f => f.modified)
 ```
 
-WebTerminal will decouple program processing logic from the presentation layer. Progrmas will output structured data, and WebTerminal will take responsibility for rendering it into HTML. The raw output of this `ls` program will be a table consisting of structured data in the Amazon Ion format:
+WebTerminal will decouple program processing logic from the presentation layer. Just as in Nushell, programs will output structured data. (The raw Nushell output is not shown; it's a format analogous to JSON). WebTerminal will take responsibility for rendering the structured data as HTML into a UI.
+
+The raw output of the `ls` program will be a table represented in the Amazon Ion format as a list of structures:
 
 ```
 [
@@ -42,7 +44,7 @@ WebTerminal will decouple program processing logic from the presentation layer. 
 ]
 ```
 
-_The purpose and use of Amazon Ion as the structured data format is discussed further below._
+_The purpose and use of Amazon Ion as the structured data format is discussed further below in its own section._
 
 WebTerminal will evaluate this structured data according to its formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
 
