@@ -1,19 +1,131 @@
 ## Introduction
 
-WebTerminal is an effort to re-imagine the interactive terminal using Web technologies throughout.
+WebTerminal is an effort to re-imagine the interactive terminal using Web technology.
 
-Technologies like web browsers and integrated development environments (IDEs) have advanced by leaps and bounds in 
-recent decades, but the terminal has remained largely static.
+The WebTerminal project originates from a crucial observation: while web technologies have evolved, becoming a vital and vibrant hub for various applications and user interactions through browsers and hypermedia, the terminal has not paralleled this progression.
 
-The terminal environment to which most software developers are accustomed has its roots in teletype (TTY) printers 
-and video display terminals (VDTs) from the 1960s. The capabilities of the terminal  are largely constrained
-by these technologies: using symbols, characters, and ANSI escape codes to display primitive "UIs". As a result,
-the utility of the terminal has advanced only marginally in the last decade, even while Web browers have made
-many significant advances.
+Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due to strict adherence to backward compatibility and its inherently character-based output.
+The contrast with the graphical and interactive nature of web technology is stark. 
 
-WebTerminal initiative aims to design a new interactive terminal environment while taking full advantage of
-modern Web technology. It aims to apply Web technologies to the terminal, to create a powerful, modern
-interactive interface, and thereby unify it with the experience of the Web.
+WebTerminal seeks to innovate by integrating modern web technologies—HTML, CSS, and JavaScript—enabling the terminal to break free from its restrictive, character-bound past.
+
+Our objective is to harness the interactive, graphical, and programmable capacities of web technologies to enhance, modernize, and elevate the terminal environment, providing developers with a rich, user-friendly, and highly flexible interface.
+
+### In a nutshell
+
+The Nushell project website demonstrates its value by showing a simple command and output:
+
+![image](https://github.com/jcrites/web-terminal/assets/88504/c6baa658-c4ec-4c3c-b792-36c64d424056)
+
+In WebShell, we'll support a similar command, with a rich hypermedia output.
+The shell will be TypeScript inspired, with extensions:
+
+```typescript
+ls()
+  .where(f => f.size > 10mb) // filter()
+  .orderBy(f => f.modified)
+```
+
+_(We can improve upon this syntax, discussed below.)_
+
+The output of this program will be structured data in Amazon Ion format (discussed below):
+
+```
+[
+  {name:"x86_64-linux-gnu-lto-dump-10", type:"file", size: 23300000, modified: 2022-10-03T12:00:00},
+  {name:"micro", type:"file", size: 13700000, modified: 2022-12-03T12:00:00},
+  {name:"buildah", type:"file", size: 19800000, modified: 2023-03-03T12:00:00},
+  {name:"qemu-system-i386", type:"file", size: 13700000, modified: 2023-05-03T12:00:00},
+  {name:"qemu-system-x86_64", type:"file", size: 13700000, modified: 2023-10-03T12:00:00},
+  {name:"node", type:"file", size: 76600000, modified: 2023-09-03T12:00:00},
+]
+```
+
+(In fact, the output will likely employ annotations, like `name: path::"node"`, `size: bytes::23300000`, etc. as described below.)
+
+WebShell will render this output as an HTML table that might display to the user like so:
+
+| name | type | size | modified |
+| --- | --- | --- | --- |
+| x86_64-linux-gnu-lto-dump-10 | file | 23.3 MiB | a year ago |
+| micro | file | 13.7 MiB | 8 months ago |
+| buildah | file | 19.8 MiB | 7 months ago |
+| qemu-system-i386 | file | 13.7 MiB | 5 months ago |
+| qemu-system-x86_64 | file | 13.7 MiB | 5 month ago |
+| node | file | 76.6 MiB | a month ago |
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Size (bytes)</th>
+      <th>Last Modified</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>x86_64-linux-gnu-lto-dump-10</td>
+      <td>file</td>
+      <td>23,300,000</td>
+      <td>2022-10-03T12:00:00</td>
+    </tr>
+    <tr>
+      <td>micro</td>
+      <td>file</td>
+      <td>13,700,000</td>
+      <td>2022-12-03T12:00:00</td>
+    </tr>
+    <tr>
+      <td>buildah</td>
+      <td>file</td>
+      <td>19,800,000</td>
+      <td>2023-03-03T12:00:00</td>
+    </tr>
+    <tr>
+      <td>qemu-system-i386</td>
+      <td>file</td>
+      <td>13,700,000</td>
+      <td>2023-05-03T12:00:00</td>
+    </tr>
+    <tr>
+      <td>qemu-system-x86_64</td>
+      <td>file</td>
+      <td>13,700,000</td>
+      <td>2023-10-03T12:00:00</td>
+    </tr>
+    <tr>
+      <td>node</td>
+      <td>file</td>
+      <td>76,600,000</td>
+      <td>2023-09-03T12:00:00</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+#### Improved TypeScript shell notation
+
+Some alternative syntaxes we might aim to support:
+
+```typescript
+// Pipeline notation
+ls | where(f => f.size > 10mb) | orderBy (f => f.modified)
+
+// Concise anonymous functions
+ls | where( _.size > 10mb) | orderBy( _.modified )
+
+// Simplified anonymous functions
+ls | where(size > 10mb) | orderBy(modified)
+
+// Methods without parentheses
+ls | where size > 10mb | orderBy modified
+```
+
+Achieving this brevity will require some modifications to the TypeScript language.
+Modifying the language in this way is certainly *possible*.
+However, since it's not absolutely essential to explore the idea of WebTerminal, we will set this aside and return to it elsewhere.
 
 ## Approach
 
