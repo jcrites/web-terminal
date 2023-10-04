@@ -4,7 +4,7 @@
 
 **Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
 **Status:** Draft
-**Version:** 1.3.2 (2023-10-04 14:03:00 PDT)
+**Version:** 1.3.3 (2023-10-04 14:31:00 PDT)
 
 ### Elevator Pitch
 
@@ -32,6 +32,10 @@ Nushell is designed to be an interactive terminal environment, but with a twist.
 
 This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
 
+However, Nushell has a fundamental limtiation: it is designed to operate within existing character-based terminals. Nushell can't display data graphically or interactively. WebTerminal aims to take advantage of the display powers of web technology, using WebView as the canvas.
+
+Nushell potentially could be adapted to work with a display provided by WebTerminal; however, it hasn't been designed with that experience in mind, and its data semantics are insufficiently precise to take full advantage of WebTerminal's intended display capabilities.
+
 #### Mathematica & Jupyter
 
 Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface:
@@ -45,6 +49,8 @@ The output of commands can also be interactive, and users can interact with slid
 <p align="center">
     <img src="https://github.com/jcrites/web-terminal/assets/88504/d35aecda-635b-461d-b57b-6aa963c07fb9">
 </p>
+
+However, Mathematica and Jupyter are designed to be specialized tools; they are not designed or optimized to be a primary command-line interface. They are not the terminal that you use to run e.g. `git commit` or `npm` or `yarn` on another project. WebTerminal aims to accommodate these daily-driver use-cases while also providing an advanced UI.
 
 ## WebTerminal
 
