@@ -540,6 +540,15 @@ This might provide a principal way of extending the WebTerminal environment. Web
 
 This concept of passing actual JavaScript objects as data (that is, not just JSON) is similar to how I understand the PowerShell environment operates: where actual .NET objects can be returned by programs or passed into them.
 
+### Success Criteria
+
+1. A shell environment that uses a TypeScript-inspired language, and that is suitable for routine daily usage. Users will use it to run commands like `git commit`, `yarn`, or `npm` in their projects – as well as taking advantage of its more sophisticated capabilities. The user experience of basic commands like `ls`, `cd`, and so on will be crisp.
+    1. To explore the product idea as an MVP, we can start by using TypeScript as the shell language as-is. It has significant rough edges compared to most shells, but is capable of functioning in the role.
+    1. It may also be possible in principle to run a shell like `bash` or `zsh` within WebTerminal. In this case, although the shell language will not be aware of the capabilities of the terminal, individual programs run by the shell could still produce structured data as output, that is rendered using a WebView. There will likely be significant compatibility challenges to exploring this approach, however, since it may require "merging" the HTML/WebView rendering mode with traditional terminal emulation.
+1. A terminal and terminal emulator. In addition to providing the WebView-powered UI experience described in this document, the terminal will, for backward compatibility, also function as a traditional terminal emulator, so that it can run shells like `bash` or `zsh` normally (such as when invoked within a container, or by `ssh` to another machine), as well as individual programs that might expect a terminal for their UI.
+1. Suitable for all command-line purposes. Once the product is viable, early adopters will have no reason to fall back to traditional shells. (If they do, then the product is either not viable or is incomplete)
+    1. It is OK on the other hand if notebook users of Mathematica and Jupyter fall back to those products for data science use-cases. We do want to support more of these use-cases over time, but we can't expect to up front. 
+
 ## Inspiration
 
 WebTerminal is significantly inspired by:
