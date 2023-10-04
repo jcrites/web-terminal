@@ -4,7 +4,7 @@
 
 **Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
 **Status:** Draft
-**Version:** 1.0.1 (2023-10-04 11:40:00 PDT)
+**Version:** 1.0.2 (2023-10-04 12:40:00 PDT)
 
 ### Elevator Pitch
 
@@ -507,6 +507,29 @@ This communication could occur simply by running the HTTP/2 protocol over `stdin
 ### Architecture
 
 The architecture of WebTerminal has yet to really be designed. For inspiration, we might draw from [Crux](https://redbadger.github.io/crux/).
+
+### Further Exploration
+
+The document above describes how programs will consume and produce structured data, like Ion objects, instead of byte streams. However, we can go further than that: **it should be possible, in principle, for programs to produce and consume actual *JavaScript objects*, that is, including dynamic behavior implemented as methods.**
+
+For example, imagine that you invoke a command that you've never used before, and that isn't built into WebTerminal: `foo`, and this command returns an object. Not only can we see the object's properties, but we could see and invoke its methods too. Thus I might be able to write code (something) like:
+
+```javascript
+let var = foo();
+foo.do_something()
+```
+
+... where the `foo.do_something()` expression invokes a method that has dynamically been provided by invoking the program `foo`.
+
+**How would this work?** The same way it does in a web page. If we consider the proposed integration architecture above, where WebTerminal executes a program like a browser talks to a web server, then the response of executing program `foo` might be a static set of data -- but a static set of data accompanied by a `<script>` tag which loads JavaScript dynamically to execute in the context that consumes it (either by including the code inline, or with a script URL that references the locally-run `foo` HTTP server).
+
+This ability to load code dynamically might be one way that programs can customize the UI that they display: loading JavaScript into the UI along the data to be displayed. However, this JavaScript could also be loaded into the WebTerminal shell environment too. Thus, running a program like `foo()` can return full-fledged JavaScript objects into the shell environment that calls it.
+
+Similarly, we might invoke some program `bar` and pass it an object (or list of them) as input. The program `bar` might expect that its input objects will implement a particular TypeScript interface, and will behave properly as long as they do. This is a step beyond merely expecting that data passed as input adheres to some JSON Schema or Ion Schema, for example.
+
+This might provide a principal way of extending the WebTerminal environment. WebTerminal *itself* doesn't need to provide every command built-in if programs can extend it in this way.
+
+This concept of passing actual JavaScript objects as data (that is, not just JSON) is similar to how I understand the PowerShell environment operates: where actual .NET objects can be returned by programs or passed into them.
 
 ## Inspiration
 
