@@ -4,7 +4,7 @@
 
 **Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
 **Status:** Draft
-**Version:** 1.3.0 (2023-10-04 13:09:00 PDT)
+**Version:** 1.3.1 (2023-10-04 13:13:00 PDT)
 
 ### Elevator Pitch
 
@@ -12,11 +12,13 @@ WebTerminal is a complete re-imagining of the command-line environment, based on
 
 ### Summary
 
-Imagine a command-line terminal where the canvas is an HTML WebView, and the entire experience is designed to take advantage of that. When you run a command from the shell, it produces structured output (like JSON) that is rendered into HTML and appended to the DOM. The terminal understands when programs output lists and tables, and renders their shapes intelligently as HTML.
+Imagine a command-line terminal where the canvas is an HTML WebView, and the entire experience is designed to take advantage of that. 
 
-Programs have access to all the display capabilities supported by HTML; they are not limited to rendering "Terminal User Interfaces (TUIs)" made up by grids of characters. The terminal gains the powers of a full-fledged web browser. Programs can output rich visual data like charts, graphs, and images. The terminal will facilitate data analysis and visualization, such as plotting data sets. The terminal will still however be useful and efficient as the daily-driver for typical software development.
+When you run a command from the shell, it produces structured output (like JSON) that is rendered into HTML and appended to the DOM. The terminal understands when programs output lists and tables, and renders their shapes intelligently with HTML. The terminal may even allow programs to produce full-fledged, dynamic JavaScript objects as output (not just JSON), such that the user can directly interact with them in their shell -- assign them to a variable, invoke their methods, and pass them to other programs (a la PowerShell).
 
-The terminal's interactivity is super-charged. While traditional shells like ZSH enable the user to customize their prompt and colors (like with [Oh-My-Zsh](https://ohmyz.sh/)), their customization is limited by their medium: terminals are grids of characters, and once output has been displayed, it's frozen. In WebTerminal, by contrast, users can customize their experience in any way that can be supported by HTML, CSS, and JavaScript. Structured program output will be converted into HTML, with microformats to preserve semantic information, and style sheets will determine how it's displayed. Semantic information, like that a string represents a filename, or alternatively a timestamp, will be preserved in the UI. JavaScript executing within the UI will interact with that structured data semantically: if a user clicks on a filename that appears in the output of a program (like `ls`), then the UI will *know* that it's a file path, and it can display a opup menu with actions like "Open File", "Copy Absolute Path", etc.
+Programs run by the terminal have access to all browser capabilities, i.e. HTML, CSS, and JavaScript; programs are not limited to rendering "Terminal User Interfaces (TUIs)" made up by grids of characters. Programs can output rich visual data like charts, graphs, and images. The terminal will facilitate data analysis and visualization, such as plotting data sets. The terminal will still however be useful and efficient as the daily-driver for typical software development.
+
+The terminal's interactivity is super-charged. While traditional shells like ZSH enable the user to customize their prompt and colors (like with [Oh-My-Zsh](https://ohmyz.sh/)), their customization is limited by their medium: terminals are grids of characters, and once output has been displayed, it's (generally) frozen. WebTerminal users can customize their experience in any way that can be supported by HTML, CSS, and JavaScript. Microformats will preserve semantic information from program output into the UI, where style sheets will determine how it's displayed. Stylesheets and JavaScript executing within the UI can react to semantic data intelligently: for example, if the `ls` program displays a file name as output, then the UI will know that it's a file, and could display a file names with a certain style, or could display a popup menu with contextual actions like "Open File", "Copy Absolute Path", etc. in response to a click by the user. Most programs can be written to output structured data only, and do not need their own display logic.
 
 WebTerminal's behavior can be extended (via an extension system, a la VS Code), and programs run within WebTerminal can also provide their own JavaScript that will affect the display of the UI, or that might execute within the user's shell environment.
 
