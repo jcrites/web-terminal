@@ -24,7 +24,7 @@ Let's explain what WebTerminal seeks to achieve by comparing it to other project
 Nushell is designed to be an interactive terminal environment, but with a twist. In Nushell, commands accept structured input, and produce structured output, such as lists and tables. Nushell can understand this structure, interact with it, and also render it somewhat visually. Its capabilities can be concisely demonstrated with the following screenshot showing a sample command and its output: 
 
 <p align="center">
-     <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/210c2bd9-1730-457b-bfb0-88ff298105cd">
+     <img src="https://github.com/jcrites/web-terminal/assets/88504/afbdd67f-7e1c-44b0-8890-0868c9e27719">
 </p>
 
 This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
@@ -34,13 +34,13 @@ This picture shows a command being run, `ls | where size > 10mb | sort-by modifi
 Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface:
 
 <p align="center">
-    <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/3b6bb419-42ce-4848-a915-5f1d8c2b1a02">
+    <img src="https://github.com/jcrites/web-terminal/assets/88504/996a9558-ebc7-46bd-8e15-85670bec9fbb">
 </p>
 
 The output of commands can also be interactive, and users can interact with sliders and other widgets to manipulate it. Jupyter provides a similar experience: 
 
 <p align="center">
-    <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/751e8599-0227-42df-9fe4-f058170c6742">
+    <img src="https://github.com/jcrites/web-terminal/assets/88504/d35aecda-635b-461d-b57b-6aa963c07fb9">
 </p>
 
 ## WebTerminal
