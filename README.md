@@ -2,6 +2,15 @@
 
 **WebTerminal is an effort to re-imagine the interactive command-line terminal using Web technology.**
 
+### Elevator Pitch
+
+Imagine a command-line terminal where the canvas is an HTML WebView. Running commands from the shell results in appending new HTML into the WebView DOM.
+
+Programs will output structured data, like lists and tables. The terminal intelligently renders them as HTML lists and tables.
+Programs can display any kind of graphical interface supported by HTML - they aren't limited to rendering "Terminal User Interfaces (TUIs)" using grids of characters. The terminal gains the full powers of a full-fledged web browser. Beyond simple structured data like tables, programs can output rich visual data, such as charts and graphs. The terminal environment will facilitate visualizing complex data (such as lists of data points).
+
+### Rationale
+
 The project originates from an observation: while web technologies have evolved substantially in recent decades, and have become the foundation for various applications and user experiences, the terminal has stagnated.
 
 Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due backward compatibility and their inherently character-based output. The contrast with the modern Web is stark.
@@ -10,21 +19,45 @@ WebTerminal seeks to innovate on the terminal experience by integrating modern W
 
 ### In a nutshell
 
-Let's explain what WebTerminal seeks to achieve by comparing it to another project that's innovating in the terminal space: Nushell. Nushell demonstrates its capabilities concisely by showing a simple command and output:
+Let's explain what WebTerminal seeks to achieve by comparing it to two other projects that have innovated in this space: [Nushell](https://www.nushell.sh/) and [Mathematica](https://www.wolfram.com/mathematica/). 
+
+#### Nushell
+
+Nushell is designed to be an interactive terminal environment, but with a twist. In Nushell, commands accept structured input, and produce structured output, such as lists and tables. Nushell can understand this structure, interact with it, and also render it somewhat visually. Its capabilities can be concisely demonstrated with the following screenshot showing a sample command and its output:
 
 ![image](https://github.com/jcrites/web-terminal/assets/88504/c6baa658-c4ec-4c3c-b792-36c64d424056)
 
 This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
 
-In WebTerminal, we'll build on this concept, culminating in rich hypermedia output. Since JavaScript is the language of the Web, we'll employ a TypeScript variant as the shell language (but with extensions). We might express the same command in WebTerminal with TypeScript like:
+#### Mathematica
+
+Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface. For example, the following screenshots demonstrate how the Mathematica commands can display output visually:
+
+![image](https://github.com/jcrites/web-terminal/assets/88504/97ada9d9-9140-4f7d-b2ae-45b32372df37)
+
+![image](https://github.com/jcrites/web-terminal/assets/88504/cda79470-080a-4dd4-81cc-ef22dcda2224)
+
+The output of commands can also be interactive, as is shown in the following screenshot, where the user can interact with sliders to manipulate parameters:
+
+![image](https://github.com/jcrites/web-terminal/assets/88504/4e885f1b-60c5-405e-90ef-f7a5ec01f999)
+
+#### WebTerminal
+
+In the WebTerminal project, we'll build on these concepts and extend them. (WebTerminal is a codename that we'll ideally replace with a unique product name.)
+
+WebTerminal is designed to be an interactive, command-line style environment that takes full advantage of the display technologies of web browsers. Specifically, WebTerminal's display canvas will be an HTML WebView. The output of commands will be rendered and displayed as HTML, making it possible for commands to produce structured lists, tables, and rich visual media.
+
+Since JavaScript is the language of the web, we will employ TypeScript as the interactive shell language, but with extensions. Whereas the example command from Nushell is `ls | where size > 10mb | sort-by modified`, we might express this in our shell language using TypeScript, like:
 
 ```typescript
-ls().where(f => f.size > 10mb).orderBy(f => f.modified)
+ls().where(f => f.size > 10*1024*1024).orderBy(f => f.modified)
 ```
 
-WebTerminal will decouple program processing logic from the presentation layer. Just as in Nushell, programs will output structured data. (The raw Nushell output is not shown; it's a format analogous to JSON). WebTerminal will take responsibility for rendering the structured data as HTML into a UI.
+There are significant opportunities to improve on TypeScript and tune it to be more suitable for interactive, command-line style usage. (See [Shell Language](#shell-language)). However, this isn't crucial for exploring the ideas of WebTerminal and building a prototype, so we'll defer this discussion.
 
-The raw output of the `ls` program will be a table represented in the Amazon Ion format as a list of structures:
+WebTerminal will decouple program processing logic from the presentation layer. Just as in Nushell, commands will process structured data. (Nushell uses JSON). WebTerminal will take responsibility for rendering the structured data as HTML into a UI.
+
+The raw output of the `ls` program in WebTerminal will be a table, represented as a list of structures in the [Amazon Ion data format](https://amazon-ion.github.io/ion-docs/):
 
 ```
 [
@@ -44,7 +77,7 @@ The raw output of the `ls` program will be a table represented in the Amazon Ion
 ]
 ```
 
-The purpose and use of Amazon Ion as the structured data format is discussed further below in its own section, [Richly Typed Structured Data](#richly-typed-structured-data).
+For more on the rationale of using Amazon Ion as this data format, see [Richly Typed Structured Data](#richly-typed-structured-data).
 
 WebTerminal will evaluate this structured data according to semantic formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
 
@@ -119,7 +152,7 @@ By using an HTTP style of interaction with programs, we can also simultaneously 
 
 This communication could occur simply by running the HTTP/2 protocol over `stdin`/`stdout`, or could occur by running the program as a local TCP server and making multiple concurrent requests to it.
 
-#### Improved TypeScript shell notation
+#### Shell Language
 
 A WebTerminal can function, in principle, using regular TypeScript notation. However, it won't be very convenient for an interactive shell environment. We might augment or modify the TypeScript language to support a mode suitable for interactive shell-like usage. We might support alternative, more concise syntaxes such as:
 
