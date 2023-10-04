@@ -6,8 +6,8 @@
 
 Imagine a command-line terminal where the canvas is an HTML WebView. Running commands from the shell results in appending new HTML into the WebView DOM.
 
-Programs will output structured data, like lists and tables. The terminal intelligently renders them as HTML lists and tables.
-Programs can display any kind of graphical interface supported by HTML - they aren't limited to rendering "Terminal User Interfaces (TUIs)" using grids of characters. The terminal gains the full powers of a full-fledged web browser. Beyond simple structured data like tables, programs can output rich visual data, such as charts and graphs. The terminal environment will facilitate visualizing complex data (such as lists of data points).
+Programs will output structured data, like lists and tables. The terminal intelligently renders them as HTM.
+Programs can display any kind of graphical content or supported by HTML - they aren't limited to rendering "Terminal User Interfaces (TUIs)" using grids of characters. The terminal gains the full powers of a full-fledged web browser. Beyond simple structured data like tables, programs can output rich visual data, such as charts and graphs. The terminal environment will facilitate visualizing complex data (such as lists of data points).
 
 **Inspiration**: The ideas underlying this concept are not new, though our specific approach might be. To read more about related ideas, see below or the [Inspiration](#inspiration) section.
 
