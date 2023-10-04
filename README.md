@@ -17,22 +17,31 @@ The project originates from an observation: while web technologies have evolved 
 
 Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due backward compatibility and their inherently character-based output. The contrast with the modern Web is stark. WebTerminal seeks to innovate on the terminal experience by integrating modern Web technologies, using HTML, CSS, and JavaScript for display, along with a processing paradigm that can take advantage of them.
 
-Let's explain what WebTerminal seeks to achieve by comparing it to two other projects that have innovated in this space: [Nushell](https://www.nushell.sh/) and [Mathematica](https://www.wolfram.com/mathematica/). 
+Let's explain what WebTerminal seeks to achieve by comparing it to other projects that have innovated in this space: [Nushell](https://www.nushell.sh/), [Mathematica](https://www.wolfram.com/mathematica/), and [Jupyter notebooks](https://jupyter.org/) (themselves inspired by Mathematica).
 
 #### Nushell
 
-Nushell is designed to be an interactive terminal environment, but with a twist. In Nushell, commands accept structured input, and produce structured output, such as lists and tables. Nushell can understand this structure, interact with it, and also render it somewhat visually. Its capabilities can be concisely demonstrated with the following screenshot showing a sample command and its output:
+Nushell is designed to be an interactive terminal environment, but with a twist. In Nushell, commands accept structured input, and produce structured output, such as lists and tables. Nushell can understand this structure, interact with it, and also render it somewhat visually. Its capabilities can be concisely demonstrated with the following screenshot showing a sample command and its output: 
 
-![image](https://github.com/jcrites/web-terminal/assets/88504/83eba013-3c05-43b7-aa14-6a6c23f32021)
+<p align="center">
+     <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/210c2bd9-1730-457b-bfb0-88ff298105cd">
+</p>
 
 This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
 
-#### Mathematica
+#### Mathematica & Jupyter
 
-Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface.
-![image](https://github.com/jcrites/web-terminal/assets/88504/4deddda1-8264-44b0-86e7-b58b7735d272)
+Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface:
 
-The output of commands can also be interactive, and users can interact with sliders and other widgets to manipulate it.
+<p align="center">
+    <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/3b6bb419-42ce-4848-a915-5f1d8c2b1a02">
+</p>
+
+The output of commands can also be interactive, and users can interact with sliders and other widgets to manipulate it. Jupyter provides a similar experience: 
+
+<p align="center">
+    <img style="width: 50%; height: auto;" src="https://github.com/jcrites/web-terminal/assets/88504/751e8599-0227-42df-9fe4-f058170c6742">
+</p>
 
 ## WebTerminal
 
@@ -498,7 +507,7 @@ The architecture of WebTerminal has yet to really be designed. For inspiration, 
 WebTerminal is significantly inspired by:
 
 1. [Nushell](https://www.nushell.sh/)
-2. [Nushell Nana](https://github.com/nushell/nana), an experimental GUI version of Nushell
+    1. [Nushell Nana](https://github.com/nushell/nana), an experimental graphical version of Nushell
 3. [PowerShell](https://learn.microsoft.com/en-us/powershell/)
 
 An understanding of WebTerminal will benefit significantly from an understanding of these technologies.
