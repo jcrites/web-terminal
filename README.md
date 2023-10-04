@@ -23,19 +23,16 @@ Let's explain what WebTerminal seeks to achieve by comparing it to two other pro
 
 Nushell is designed to be an interactive terminal environment, but with a twist. In Nushell, commands accept structured input, and produce structured output, such as lists and tables. Nushell can understand this structure, interact with it, and also render it somewhat visually. Its capabilities can be concisely demonstrated with the following screenshot showing a sample command and its output:
 
-![image](https://github.com/jcrites/web-terminal/assets/88504/c6baa658-c4ec-4c3c-b792-36c64d424056)
+![image](https://github.com/jcrites/web-terminal/assets/88504/83eba013-3c05-43b7-aa14-6a6c23f32021)
 
 This picture shows a command being run, `ls | where size > 10mb | sort-by modified`. The output is displayed as a table, with some semantic understanding of the content (e.g. last modified time as "a year ago").
 
 #### Mathematica
 
 Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface.
+![image](https://github.com/jcrites/web-terminal/assets/88504/4deddda1-8264-44b0-86e7-b58b7735d272)
 
-![image](https://github.com/jcrites/web-terminal/assets/88504/7b97b1cd-3f29-481e-8cff-14d39f86e237)
-
-The output of commands can also be interactive, as is shown in the following screenshot, where the user can interact with sliders to manipulate parameters:
-
-![image](https://github.com/jcrites/web-terminal/assets/88504/4e885f1b-60c5-405e-90ef-f7a5ec01f999)
+The output of commands can also be interactive, and users can interact with sliders and other widgets to manipulate it.
 
 ## WebTerminal
 
