@@ -4,7 +4,7 @@
 
 **Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
 **Status:** Draft
-**Version:** 1.3.1 (2023-10-04 13:13:00 PDT)
+**Version:** 1.3.2 (2023-10-04 14:03:00 PDT)
 
 ### Elevator Pitch
 
@@ -14,13 +14,13 @@ WebTerminal is a complete re-imagining of the command-line environment, based on
 
 Imagine a command-line terminal where the canvas is an HTML WebView, and the entire experience is designed to take advantage of that. The terminal will have advanced UI capabilities but still be useful as a primary daily-driver for typical software development.
 
-When you run a command from the shell, it produces structured output (like JSON) that is rendered and displayed in the WebView. The terminal defines and understands common interfaces or shapes of data, such as lists and tables, and renders them intelligently as HTML. The terminal may even allow programs to produce full-fledged, dynamic JavaScript objects as output (not just JSON), such that the user can directly interact with them in their shell -- assign them to a variable, invoke their methods, and pass them to other programs (a la PowerShell). 
+When you run a command from the shell, it produces structured output (like JSON) that is rendered and displayed in the WebView. The terminal defines and understands common interfaces or shapes of data, such as lists and tables, as well as data types like file names or timestamps, and renders them intelligently as HTML, where the display environment takes full advantage of browser capabilities; programs are not limited to rendering "Terminal User Interfaces (TUIs)" made up by grids of characters. 
 
-Programs run by the terminal have access to all browser capabilities, i.e. HTML, CSS, and JavaScript; they are not limited to rendering "Terminal User Interfaces (TUIs)" made up by grids of characters. Programs can output rich visual data like charts, graphs, and images. Programs with unique needs may provide their own JavaScript that runs within the WebView, to display a UI. However, data processing and display logic are decoupled: most programs will only produce structured data as output in a standard format that the terminal understands and can display. 
+The terminal provides powerful interactivity and semantic understanding of data. Microformats will preserve data semantics into the UI, where style sheets and JavaScript will determine how each type of data is displayed. Data processing and display logic are decoupled: most programs will only produce structured in a standard format as output, but programs with unique needs may provide their own HTML/CSS/JS.
 
-The terminal provides powerful interactivity and semantic understanding of data. While traditional shells like ZSH enable the user to customize their prompt and colors (like with [Oh-My-Zsh](https://ohmyz.sh/)), their customization is limited by their medium: terminals are grids of characters, and once output has been displayed, it's generally frozen. WebTerminal users can customize their experience in any way that can be supported by HTML, CSS, and JavaScript. Microformats will preserve data semantics into the UI, where style sheets will determine how data is displayed.
+User interaction with WebTerminal will feel more like using an IDE than a traditional terminal. Since the terminal understands data semantics, it can provide features like Content Assist or Code Completion -- not only when passing input to programs, but interacting with their output too. For example, the terminal will understand that the output from `ls` is a list of files specifically. When the user hovers their mouse over a file name, the UI might display additional information about the file (like its size); or when the user clicks, it might display a contextual popup menu with actions like "Open File", "Copy Absolute Path", or "Git Diff".
 
-User interaction with WebTerminal should feel more like using an IDE than a traditional terminal. Since the terminal understands data semantics, it can provide features like Content Assist or Code Completion -- not only when passing input to programs, but interacting with their output too. For example, the terminal will understand that the output from `ls` is a list of files specifically. When the user hovers their mouse over a file name, the UI might display additional information about the file (like its size); or when the user clicks, it might display a contextual popup menu with actions like "Open File", "Copy Absolute Path", or "Git Diff". Since the terminal understands data semantically, interactions like these are not broken when e.g. changing the current working directory (even if the file was a relative path originally).
+The terminal may also allow programs to produce full-fledged, dynamic JavaScript objects as output (not just JSON), such that the user can directly interact with them in their shell -- assign them to a variable, invoke their methods, and pass them to other programs (a la PowerShell). 
 
 **Inspiration**: The ideas underlying this concept are not new, though our specific approach might be. To read more about related ideas, see below or the [Inspiration](#inspiration) section.
 
