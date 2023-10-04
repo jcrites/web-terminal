@@ -63,10 +63,10 @@ The HTML data underlying this table will employ attributes and microformats so t
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Size (bytes)</th>
-      <th>Last Modified</th>
+      <th>name</th>
+      <th>type</th>
+      <th>size (bytes)</th>
+      <th>modified</th>
     </tr>
   </thead>
   <tbody>
