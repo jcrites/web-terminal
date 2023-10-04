@@ -44,9 +44,9 @@ The raw output of the `ls` program will be a table represented in the Amazon Ion
 ]
 ```
 
-_The purpose and use of Amazon Ion as the structured data format is discussed further below in its own section._
+The purpose and use of Amazon Ion as the structured data format is discussed further below in its own section, [Richly Typed Structured Data](#richly-typed-structured-data).
 
-WebTerminal will evaluate this structured data according to its formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
+WebTerminal will evaluate this structured data according to semantic formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
 
 | name | type | size | modified |
 | --- | --- | --- | --- |
@@ -57,7 +57,7 @@ WebTerminal will evaluate this structured data according to its formatting logic
 | qemu-system-x86_64 | file | 13.7 MiB | 5 month ago |
 | node | file | 76.6 MiB | a month ago |
 
-The HTML data underlying this table will employ attributes and microformats so that semantic data is preserved into the UI layer, so that style sheets and dynamic JavaScript logic can interact with it intelligently. The HTML used to display this table might be:
+The HTML data underlying this table will employ attributes and microformats so as to preserve semantic data into the UI layer. The HTML used to display this table might be:
 
 ```html
 <table>
@@ -89,13 +89,19 @@ The HTML data underlying this table will employ attributes and microformats so t
 </table>
 ```
 
-This HTML demonstrates that the rendering logic has understood file paths semantically, and tagged them using `class="path"`, so that styles can be attached. It also captured the current working directory at the time when the file was displayed using `data-cwd`, so that any subsequent UI action can understand relative paths correctly. It might also snapshot its best guess of the file's absolute path as `data-abs-path`.
+Notably:
 
-This way, the user can click on the file `x86_64-linux-gnu-lto-dump-10` in the terminal and select (e.g.) Open File, and WebTerminal will correctly open this file in the user's editor, even if the user has navigated to another working directory (such that `./x86_64-linux-gnu-lto-dump-10` is no longer a valid relative path). WebTerminal can always behave intelligently when it understands the semantics of what's being displayed.
+1. The file path `path::"x86_64-linux-gnu-lto-dump-10"` has been understood as a file path, and rendered as an HTML element with `class="path"`, so that file-specific styles can be attached to it.
+2. File paths can be relative. WebTerminal also captured the current working directory when this file path was produced, using `data-cwd`.
+3. WebTerminal might also calculate its guess of the file's absolute path and convey it as `data-abs-path`.
+4. The file size in bytes is rendered as a human-friendly string `23.3 MiB`. However, the raw file size in bytes is also available to the UI.
+5. The timestamp is displayed as the human-friendly `1 year ago`. However, the raw timestamp is also available to the UI.
 
-Similarly, when displaying a timestamp like the `modified` time, WebTerminal will render it in a friendly way like "a year ago". However, the HTML underlying that element will capture the precise time using a `<time>` element. If the user clicks on it and selects "Copy", then the raw value `2022-01-01T18:00:00Z` will probably be copied to their clipboard (not `1 year ago`).
+Since WebTerminal has a semantic understanding of the output, it can behave intelligently. For example, example, even if the user changes their current directory, WebTerminal can still operate correctly on file paths that were displayed as relative paths. If the user clicks on a file and selects "Open in Editor", WebTerminal will open the user's `EDITOR` on that file even if the current working directory has changed (and the original relative path is no longer valid). Similarly, user can click on a friendly size like `23.3 MiB` and select "Copy", which might copy the raw size in bytes (e.g. `23300000`). When copying a timestamp like `1 year ago`, the clipboard might receive a precise timestamp like `2022-01-01T18:00:00Z`.
 
-WebTerminal aims to decouple the logic of program processing and data output, from the presentation logic used to display that data to the user.
+These are just some of the intelligent behaviors that WebTerminal can exhibit using structured data formats and a semantic understanding of program output.
+
+WebTerminal also aims to decouple the logic of data processing from rendering and UI. Programs can be designed to simply consume and produce structured data, without being especially concerned how that will be displayed to users (within the bounds of what WebTerminal rendering and stylesheets are designed to accommodate).
 
 #### Integrated & 3rd Party Commands
 
