@@ -2,6 +2,10 @@
 
 **WebTerminal is an effort to re-imagine the interactive command-line terminal using Web technology.**
 
+**Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
+**Status:** Draft
+**Version:** 1.0.1 (2023-10-04 11:40:00 PDT)
+
 ### Elevator Pitch
 
 Imagine a command-line terminal where the canvas is an HTML WebView. Running commands from the shell results in appending new HTML into the WebView DOM.
