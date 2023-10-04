@@ -6,19 +6,19 @@
 **Status:** Draft
 **Version:** 1.3.3 (2023-10-04 14:31:00 PDT)
 
-### Elevator Pitch
+### Elevator Pitch (TL;DR)
 
-WebTerminal is a complete re-imagining of the command-line environment, based on the idea that the terminal's display canvas is an HTML WebView, bringing all the advantages of web browsers to the terminal.
-
-**Inspiration**: The ideas underlying this concept are not new, though our specific approach might be. To read more about related ideas, see below or the [Inspiration](#inspiration) section.
-
-**Motivation:** WebTerminal is a technology that I wish existed, and wish that I could use, so I'm trying to create it. (Alternatives come close, but don't hit the mark.) My intention is to release this technology as open-source software; there is no commercial motivation or business deadline at the moment. I see this project as R&D work.
+WebTerminal is a complete re-imagining of the command-line environment, designing it from the ground up to take full advantage of browser technology. As a simplification, WebTerminal is a tool that users run that provides a command-line environment where programs display their output as HTML rendered into a WebView.
 
 ### Rationale
 
 The project originates from an observation: while web technologies have evolved substantially in recent decades, and have become the foundation for various applications and user experiences, the terminal has stagnated.
 
 Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due backward compatibility and their inherently character-based output. The contrast with the modern Web is stark. WebTerminal seeks to innovate on the terminal experience by integrating modern Web technologies, using HTML, CSS, and JavaScript for display, along with a processing paradigm that can take advantage of them.
+
+**Inspiration**: The ideas underlying this concept are not new, though our specific approach might be. To read more about related ideas, see below or the [Inspiration](#inspiration) section.
+
+**Motivation:** WebTerminal is a technology that I wish existed, and wish that I could use, so I'm trying to create it. (Alternatives come close, but don't hit the mark.) My intention is to release this technology as open-source software; there is no commercial motivation or business deadline at the moment. I see this project as R&D work.
 
 Let's explain what WebTerminal seeks to achieve by comparing it to other projects that have innovated in this space: [Nushell](https://www.nushell.sh/), [Mathematica](https://www.wolfram.com/mathematica/), and [Jupyter notebooks](https://jupyter.org/) (themselves inspired by Mathematica).
 
