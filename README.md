@@ -9,15 +9,13 @@ Imagine a command-line terminal where the canvas is an HTML WebView. Running com
 Programs will output structured data, like lists and tables. The terminal intelligently renders them as HTML lists and tables.
 Programs can display any kind of graphical interface supported by HTML - they aren't limited to rendering "Terminal User Interfaces (TUIs)" using grids of characters. The terminal gains the full powers of a full-fledged web browser. Beyond simple structured data like tables, programs can output rich visual data, such as charts and graphs. The terminal environment will facilitate visualizing complex data (such as lists of data points).
 
+**Inspiration**: The ideas underlying this concept are not new, though our specific approach might be. To read more about related ideas, see below or the [Inspiration](#inspiration) section.
+
 ### Rationale
 
 The project originates from an observation: while web technologies have evolved substantially in recent decades, and have become the foundation for various applications and user experiences, the terminal has stagnated.
 
-Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due backward compatibility and their inherently character-based output. The contrast with the modern Web is stark.
-
-WebTerminal seeks to innovate on the terminal experience by integrating modern Web technologies, using HTML, CSS, and JavaScript for display, along with a processing paradigm that can take advantage of them.
-
-### Technology Inspirations
+Traditional terminals, rooted in 1960s teletype technology, utilize characters and ANSI escape codes to render limited user interfaces, and their development has been somewhat arrested due backward compatibility and their inherently character-based output. The contrast with the modern Web is stark. WebTerminal seeks to innovate on the terminal experience by integrating modern Web technologies, using HTML, CSS, and JavaScript for display, along with a processing paradigm that can take advantage of them.
 
 Let's explain what WebTerminal seeks to achieve by comparing it to two other projects that have innovated in this space: [Nushell](https://www.nushell.sh/) and [Mathematica](https://www.wolfram.com/mathematica/). 
 
