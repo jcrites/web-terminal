@@ -17,7 +17,7 @@ Traditional terminals, rooted in 1960s teletype technology, utilize characters a
 
 WebTerminal seeks to innovate on the terminal experience by integrating modern Web technologies, using HTML, CSS, and JavaScript for display, along with a processing paradigm that can take advantage of them.
 
-### In a nutshell
+### Technology Inspirations
 
 Let's explain what WebTerminal seeks to achieve by comparing it to two other projects that have innovated in this space: [Nushell](https://www.nushell.sh/) and [Mathematica](https://www.wolfram.com/mathematica/). 
 
@@ -31,151 +31,21 @@ This picture shows a command being run, `ls | where size > 10mb | sort-by modifi
 
 #### Mathematica
 
-Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface. For example, the following screenshots demonstrate how the Mathematica commands can display output visually:
+Mathematica may have been the first environment that implements the "notebook" UI model. Mathematica is an advanced notebook environment designed around mathematics and computation. Mathematica commands and their outputs are displayed visually, directly in the terminal-style interface.
 
-![image](https://github.com/jcrites/web-terminal/assets/88504/97ada9d9-9140-4f7d-b2ae-45b32372df37)
-
-![image](https://github.com/jcrites/web-terminal/assets/88504/cda79470-080a-4dd4-81cc-ef22dcda2224)
+![image](https://github.com/jcrites/web-terminal/assets/88504/7b97b1cd-3f29-481e-8cff-14d39f86e237)
 
 The output of commands can also be interactive, as is shown in the following screenshot, where the user can interact with sliders to manipulate parameters:
 
 ![image](https://github.com/jcrites/web-terminal/assets/88504/4e885f1b-60c5-405e-90ef-f7a5ec01f999)
 
-#### WebTerminal
+## WebTerminal
 
 In the WebTerminal project, we'll build on these concepts and extend them. (WebTerminal is a codename that we'll ideally replace with a unique product name.)
 
 WebTerminal is designed to be an interactive, command-line style environment that takes full advantage of the display technologies of web browsers. Specifically, WebTerminal's display canvas will be an HTML WebView. The output of commands will be rendered and displayed as HTML, making it possible for commands to produce structured lists, tables, and rich visual media.
 
-Since JavaScript is the language of the web, we will employ TypeScript as the interactive shell language, but with extensions. Whereas the example command from Nushell is `ls | where size > 10mb | sort-by modified`, we might express this in our shell language using TypeScript, like:
-
-```typescript
-ls().where(f => f.size > 10*1024*1024).orderBy(f => f.modified)
-```
-
-There are significant opportunities to improve on TypeScript and tune it to be more suitable for interactive, command-line style usage. (See [Shell Language](#shell-language)). However, this isn't crucial for exploring the ideas of WebTerminal and building a prototype, so we'll defer this discussion.
-
-WebTerminal will decouple program processing logic from the presentation layer. Just as in Nushell, commands will process structured data. (Nushell uses JSON). WebTerminal will take responsibility for rendering the structured data as HTML into a UI.
-
-The raw output of the `ls` program in WebTerminal will be a table, represented as a list of structures in the [Amazon Ion data format](https://amazon-ion.github.io/ion-docs/):
-
-```
-[
-  {
-    name: path::"x86_64-linux-gnu-lto-dump-10",
-    type: file_type::"file",
-    size: bytes::23300000,
-    modified: 2022-10-03T12:00:00
-  },
-  {
-    name: path::"micro",
-    type: file_type::"file",
-    size: bytes::13700000,
-    modified: 2022-12-03T12:00:00
-  },
-  // ...
-]
-```
-
-For more on the rationale of using Amazon Ion as this data format, see [Richly Typed Structured Data](#richly-typed-structured-data).
-
-WebTerminal will evaluate this structured data according to semantic formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
-
-| name | type | size | modified |
-| --- | --- | --- | --- |
-| x86_64-linux-gnu-lto-dump-10 | file | 23.3 MiB | a year ago |
-| micro | file | 13.7 MiB | 8 months ago |
-| buildah | file | 19.8 MiB | 7 months ago |
-| qemu-system-i386 | file | 13.7 MiB | 5 months ago |
-| qemu-system-x86_64 | file | 13.7 MiB | 5 month ago |
-| node | file | 76.6 MiB | a month ago |
-
-The HTML data underlying this table will employ attributes and microformats so as to preserve semantic data into the UI layer. The HTML used to display this table might be:
-
-```html
-<table>
-  <thead>
-    <tr>
-      <th>name</th>
-      <th>type</th>
-      <th>size (bytes)</th>
-      <th>modified</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="path"
-        data-cwd="/users/alice"
-        data-abs-path="/users/alice/x86_64-linux-gnu-lto-dump-10">
-        x86_64-linux-gnu-lto-dump-10
-      </td>
-    </tr>
-    <tr>
-      <td class="file_type">file</td>
-      <td class="bytes" data-raw="23300000">23.3 MiB</td>
-      <td>
-          <time class="modified-time" datetime="2022-01-01T18:00:00Z">1 year ago</time>
-      </td>
-    </tr>
-    <!-- ... -->
-  </tbody>
-</table>
-```
-
-Notably:
-
-1. The file path `path::"x86_64-linux-gnu-lto-dump-10"` has been understood as a file path, and rendered as an HTML element with `class="path"`, so that file-specific styles can be attached to it.
-2. File paths can be relative. WebTerminal also captured the current working directory when this file path was produced, using `data-cwd`.
-3. WebTerminal might also calculate its guess of the file's absolute path and convey it as `data-abs-path`.
-4. The file size in bytes is rendered as a human-friendly string `23.3 MiB`. However, the raw file size in bytes is also available to the UI.
-5. The timestamp is displayed as the human-friendly `1 year ago`. However, the raw timestamp is also available to the UI.
-
-Since WebTerminal has a semantic understanding of the output, it can behave intelligently. For example, example, even if the user changes their current directory, WebTerminal can still operate correctly on file paths that were displayed as relative paths. If the user clicks on a file and selects "Open in Editor", WebTerminal will open the user's `EDITOR` on that file even if the current working directory has changed (and the original relative path is no longer valid). Similarly, user can click on a friendly size like `23.3 MiB` and select "Copy", which might copy the raw size in bytes (e.g. `23300000`). When copying a timestamp like `1 year ago`, the clipboard might receive a precise timestamp like `2022-01-01T18:00:00Z`.
-
-These are just some of the intelligent behaviors that WebTerminal can exhibit using structured data formats and a semantic understanding of program output.
-
-WebTerminal also aims to decouple the logic of data processing from rendering and UI. Programs can be designed to simply consume and produce structured data, without being especially concerned how that will be displayed to users (within the bounds of what WebTerminal rendering and stylesheets are designed to accommodate).
-
-#### Integrated & 3rd Party Commands
-
-Programs will need to integrate with WebTerminal and produce output in its format in order for users to experience the full benefits. A prototype might implement a subset of common commands, like `ls`, `cd`, `find`, etc. For the terminal to be successful and maximally useful, however, it will need to bundle programs providing all of the functionality that users expect (viz. Gnu coreutils).
-
-If WebTerminal were successfully adopted in a widespread way, then 3rd party programs might offer support for producing output in its format. WebTerminal might need an integration mode where it can query a program to determine if it has WebTerminal support. If it does not, then the program's output will be treated as a stream of bytes (with support for parsing this as JSON, CSV, etc.) If the program does have WebTerminal support, then the program will be asked to produce output in WebTerminal format (which might be Ion + CSS + JS).
-
-Nushell (by comparison) does not provide integration with 3rd party programs. For a prototype of WebTerminal we don't need to either; however, we should design it so that it is possible for WebTerminal to eventually invoke arbitrary executables while sending/receiving structured WebTerminal data.
-
-In the simplest interaction mode, programs run by WebTerminal could accept Ion data as input and produce it as output. In a more sophisticated integration mode, WebTerminal could communicate with programs in the style of an HTTP server over stdin/stdout. This would make it possible for programs to return hypermedia documents in response to commands, such that output can reference hyperlinks to stylesheets or dynamic JavaScript served by the program, and rendered by the WebTerminal display.
-
-Integrating with programs in this way also makes it possible for output to be displayed in real-time. For example, a WebTerminal equivalent of `top` or `htop` could function as a mini-web-page, with client-side JavaScript running that periodically queries the `htop` server for CPU Utilization information to display. Similarly, a long running program could display a progress bar to the client, which updates according to output from the program.
-
-By using an HTTP style of interaction with programs, we can also simultaneously communicate over multiple data channels and control channels (modeled as concurrent HTTP requests, specifically HTTP/2 requests). That is, an expensive program launched as an HTTP-style server might produce a large volume of data as output in response to a request, while also communicating status to the UI using another concurrent series of requests/responses.
-
-This communication could occur simply by running the HTTP/2 protocol over `stdin`/`stdout`, or could occur by running the program as a local TCP server and making multiple concurrent requests to it.
-
-#### Shell Language
-
-A WebTerminal can function, in principle, using regular TypeScript notation. However, it won't be very convenient for an interactive shell environment. We might augment or modify the TypeScript language to support a mode suitable for interactive shell-like usage. We might support alternative, more concise syntaxes such as:
-
-```typescript
-// Note 10mb as a convenience for 10*1024^2 bytes
-// Pipeline notation
-ls | where(f => f.size > 10mib) | orderBy (f => f.modified)
-
-// Concise anonymous functions
-ls | where( _.size > 10mib) | orderBy( _.modified )
-
-// Simplified anonymous functions
-ls | where(size > 10mib) | orderBy(modified)
-
-// Methods without parentheses
-ls | where size > 10mib | orderBy modified
-```
-
-We might also support a mode where naked commands (like `git`) will invoke programs of that name directly from the `PATH`. If we allow this, then we'll also need a notation to reference variables. We might employ a syntax like `$var` for variables, similar to shells like Bash and Zsh. We might also automatically `await` promises (or top-level promises), so that fewer `await` expressions are required interactively.
-
-However, modifying TypeScript to support this idea is not the key goal of this project. We know that it's possible in principle, since a variety of different programming languages exist with various syntaxes. It's something that we'll want to do eventually, but it's not required for building a prototype that explores the concept of WebTerminal.
-
-We'll likely want to use NodeJS to power the core of the interactive TypeScript experience.
+WebTerminal will likely be a [NodeJS](https://nodejs.org/en) application that uses [Electron](https://www.electronjs.org/) for its display. Since JavaScript is the de facto language of the Web, we'll also seek to use TypeScript as the primary programming language of the WebTerminal environment (with modifications). WebTerminal will be open source software.
 
 ## Approach
 
@@ -353,9 +223,92 @@ However, the meaning of annotations can be established by convention and context
 
 The WebTerminal environment will take advantage of these types and their annotations to enrich the user experience.
 
-### Interactive, Richly Typed Hypermedia
+### Structured Data
 
-#### Data Formats
+WebTerminal will decouple program processing logic from the presentation layer. Just as in Nushell, commands will process structured data. (Nushell uses JSON). WebTerminal will take responsibility for rendering the structured data as HTML into a UI.
+
+The raw output of the `ls` program in WebTerminal will be a table, represented as a list of structures in the [Amazon Ion data format](https://amazon-ion.github.io/ion-docs/):
+
+```
+[
+  {
+    name: path::"x86_64-linux-gnu-lto-dump-10",
+    type: file_type::"file",
+    size: bytes::23300000,
+    modified: 2022-10-03T12:00:00
+  },
+  {
+    name: path::"micro",
+    type: file_type::"file",
+    size: bytes::13700000,
+    modified: 2022-12-03T12:00:00
+  },
+  // ...
+]
+```
+
+For more on the rationale of using Amazon Ion as this data format, see [Richly Typed Structured Data](#richly-typed-structured-data).
+
+### User Interface
+
+WebTerminal will evaluate this structured data according to semantic formatting logic, and then will render it into HTML and display it using a WebView. The HTML that's displayed might look like:
+
+| name | type | size | modified |
+| --- | --- | --- | --- |
+| x86_64-linux-gnu-lto-dump-10 | file | 23.3 MiB | a year ago |
+| micro | file | 13.7 MiB | 8 months ago |
+| buildah | file | 19.8 MiB | 7 months ago |
+| qemu-system-i386 | file | 13.7 MiB | 5 months ago |
+| qemu-system-x86_64 | file | 13.7 MiB | 5 month ago |
+| node | file | 76.6 MiB | a month ago |
+
+The HTML data underlying this table will employ attributes and microformats so as to preserve semantic data into the UI layer. The HTML used to display this table might be:
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>type</th>
+      <th>size (bytes)</th>
+      <th>modified</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="path"
+        data-cwd="/users/alice"
+        data-abs-path="/users/alice/x86_64-linux-gnu-lto-dump-10">
+        x86_64-linux-gnu-lto-dump-10
+      </td>
+    </tr>
+    <tr>
+      <td class="file_type">file</td>
+      <td class="bytes" data-raw="23300000">23.3 MiB</td>
+      <td>
+          <time class="modified-time" datetime="2022-01-01T18:00:00Z">1 year ago</time>
+      </td>
+    </tr>
+    <!-- ... -->
+  </tbody>
+</table>
+```
+
+Notably:
+
+1. The file path `path::"x86_64-linux-gnu-lto-dump-10"` has been understood as a file path, and rendered as an HTML element with `class="path"`, so that file-specific styles can be attached to it.
+2. File paths can be relative. WebTerminal also captured the current working directory when this file path was produced, using `data-cwd`.
+3. WebTerminal might also calculate its guess of the file's absolute path and convey it as `data-abs-path`.
+4. The file size in bytes is rendered as a human-friendly string `23.3 MiB`. However, the raw file size in bytes is also available to the UI.
+5. The timestamp is displayed as the human-friendly `1 year ago`. However, the raw timestamp is also available to the UI.
+
+Since WebTerminal has a semantic understanding of the output, it can behave intelligently. For example, example, even if the user changes their current directory, WebTerminal can still operate correctly on file paths that were displayed as relative paths. If the user clicks on a file and selects "Open in Editor", WebTerminal will open the user's `EDITOR` on that file even if the current working directory has changed (and the original relative path is no longer valid). Similarly, user can click on a friendly size like `23.3 MiB` and select "Copy", which might copy the raw size in bytes (e.g. `23300000`). When copying a timestamp like `1 year ago`, the clipboard might receive a precise timestamp like `2022-01-01T18:00:00Z`.
+
+These are just some of the intelligent behaviors that WebTerminal can exhibit using structured data formats and a semantic understanding of program output.
+
+WebTerminal also aims to decouple the logic of data processing from rendering and UI. Programs can be designed to simply consume and produce structured data, without being especially concerned how that will be displayed to users (within the bounds of what WebTerminal rendering and stylesheets are designed to accommodate).
+
+### Data Formats
 
 ##### File Paths
 
@@ -479,36 +432,71 @@ Each in-place change of the data in the table might invisibly create a new "vers
 (Perhaps this experience is even backed by a small, automatically managed `git` repository? 
 In this way, the user could "export" the table to a file, and also export their history of edits to the table as a series of Git commits)
 
-### TypeScript language
+### Shell Language
 
 JavaScript is the language of the Web, and we aim to employ TypeScript as the interactive and shell language for WebTerminal.
 
+A WebTerminal can function, in principle, using regular TypeScript notation. However, it won't be very convenient for an interactive shell environment. Consequently, we might develop a variant of TypeScript that's intended for interactive command-line usage. (The [Nushell language called Nu](https://www.nushell.sh/book/nu_as_a_shell.html) is well designed with these constraints in mind.)
+
+In particular, we might improve on TypeScript syntax with the following refinements:
+
+```typescript
+// Original TypeScript
+ls().where(f => f.size > 10*1024*1024).orderBy(f => f.modified)
+
+// Supporting data types like "mb" or "mib" for megabytes out-of-the-box
+// (viz. Nushell)
+ls().where(f => f.size > 10mb).orderBy(f => f.modified)
+
+// Supporting pipeline-style notation
+ls | where(f => f.size > 10mib) | orderBy (f => f.modified)
+
+// Concise anonymous functions
+ls | where( _.size > 10mib) | orderBy( _.modified )
+
+// Even more concise anonymous functions
+ls | where(size > 10mib) | orderBy(modified)
+
+// Methods without parentheses
+ls | where size > 10mib | orderBy modified
+```
+
+With these series of refinements, the language starts to look a lot more like a traditional shell language.
+
+We'll also need to support executing existing programs on the user's system, such as `git`. Although we might build support for many commands into the WebTerminal system directly, such as traditional GNU coreutils like `cd`, `ls`, etc., we can't assume that *every* program the user wants to run will be built-in. A shell must conveniently execute any program.
+
+If the user enters `git` as a command, then we should run the `git` program from their `PATH`. To support this, we'll need a notation that accepts naked words and understands them as commands and arguments. For example, `cat foo.txt` should ideally be a valid command.
+
+To support this, we may need to differentiate between "commands" and references to TypeScript variables (including functions). A command like `cd foo` or `ls` will probably invoke built-in logic that handles `cd` and `ls`. A command like `git` will likely need to invoke the `git` executable, and pass it whatever arguments follow. This means commands will not be valid TypeScript syntax, e.g. `git pull --rebase origin/mainline`.
+
+We might design a variant of TypeScript to support this in some way. Specifically, perhaps any expression will (need to) support a top level series of tokens that will be interpreted as a command. If the user wants to access TypeScript variables, then perhaps they will prepend a sigil like `$` to them. Any symbol that doesn't include a `$` might be treated as a string constant, such that a command like `git pull --rebase origin/mainline` is interpreted as `["git", "pull", "--rebase", "origin/mainline"]` and passed to the command handler.
+
+How exactly we'll need to modify TypeScript to support this is unclear. However, we can fully prototype WebTerminal while using TypeScript exactly as it is; it just won't be a convenient interactive language.
+
 The shell experience might be inspired by the libraries [Dax](https://github.com/dsherret/dax) and [Zx](https://github.com/google/zx).
 
-For an initial prototype of WebTerminal, we can use TypeScript as-is in an interactive capacity.
-However, TypeScript (and JavaScript) aren't really suitable for being interactive shells.
-Specifically, the user needs to be able to enter commands in a simple way, like `cat foo.txt`.
-When they do this, both the command to run `cat` and its argument `foo.txt` are naked strings.
 
-The [Nushell language called Nu](https://www.nushell.sh/book/nu_as_a_shell.html) is well designed with this constraint in mind.
+### Integrated & 3rd Party Commands
 
-Using the Dax library, executing a command can be *relatively* simple: ``await $`cat foo.txt` `` -- but this is still too much boilerplate for an interactive shell.
-Thus, the final form of WebTerminal might incorporate a modified variant of TypeScript designed for interactive usage.
+Building on the User Interface section above
 
-This variant might interpret "command" literals as programs to run, e.g. `cat foo.txt`.
-It might access TypeScript variables `foo` using the notation `$foo`.
+Programs will need to integrate with WebTerminal and produce output in its format in order for users to experience the full benefits. A prototype might implement a subset of common commands, like `ls`, `cd`, `find`, etc. For the terminal to be successful and maximally useful, however, it will need to bundle programs providing all of the functionality that users expect (viz. Gnu coreutils).
 
-The Dax and Zx libraries also require the use of `await`, as in ``let branch = await $`git branch --show-current` ``.
-Perhaps we can automatically `await` some promises when in interactive mode.
+If WebTerminal were successfully adopted in a widespread way, then 3rd party programs might offer support for producing output in its format. WebTerminal might need an integration mode where it can query a program to determine if it has WebTerminal support. If it does not, then the program's output will be treated as a stream of bytes (with support for parsing this as JSON, CSV, etc.) If the program does have WebTerminal support, then the program will be asked to produce output in WebTerminal format (which might be Ion + CSS + JS).
+
+Nushell (by comparison) does not provide integration with 3rd party programs. For a prototype of WebTerminal we don't need to either; however, we should design it so that it is possible for WebTerminal to eventually invoke arbitrary executables while sending/receiving structured WebTerminal data.
+
+In the simplest interaction mode, programs run by WebTerminal could accept Ion data as input and produce it as output. In a more sophisticated integration mode, WebTerminal could communicate with programs in the style of an HTTP server over stdin/stdout. This would make it possible for programs to return hypermedia documents in response to commands, such that output can reference hyperlinks to stylesheets or dynamic JavaScript served by the program, and rendered by the WebTerminal display.
+
+Integrating with programs in this way also makes it possible for output to be displayed in real-time. For example, a WebTerminal equivalent of `top` or `htop` could function as a mini-web-page, with client-side JavaScript running that periodically queries the `htop` server for CPU Utilization information to display. Similarly, a long running program could display a progress bar to the client, which updates according to output from the program.
+
+By using an HTTP style of interaction with programs, we can also simultaneously communicate over multiple data channels and control channels (modeled as concurrent HTTP requests, specifically HTTP/2 requests). That is, an expensive program launched as an HTTP-style server might produce a large volume of data as output in response to a request, while also communicating status to the UI using another concurrent series of requests/responses.
+
+This communication could occur simply by running the HTTP/2 protocol over `stdin`/`stdout`, or could occur by running the program as a local TCP server and making multiple concurrent requests to it.
 
 ### Architecture
 
 The architecture of WebTerminal has yet to really be designed. For inspiration, we might draw from [Crux](https://redbadger.github.io/crux/).
-
-Crux is an experimental approach to building cross-platform applications with good testability, code and behavior reuse, security, etc.
-Its architecture consists of a "Core" system built in Rust, which drives business logic, and a "Shell" that provides all interfaces
-to the external world, including the human user.
-
 
 ## Inspiration
 
