@@ -8,7 +8,7 @@
 
 ### Elevator Pitch (TL;DR)
 
-WebTerminal is a complete re-imagining of the command-line environment, designing it from the ground up to take full advantage of browser technology. As a simplification, WebTerminal is a tool that users run that provides a command-line environment where programs display their output as HTML rendered into a WebView.
+WebTerminal is a complete re-imagining of the command-line environment, designing it from the ground up to take full advantage of browser technology. As a simplification, WebTerminal is a developer tool that provides a command-line environment where programs display their output as HTML rendered into a WebView. Traditional terminals are limited to displaying grids of characters, but programs running in WebTerminal can produce any kind of rich output that a web browser can display – including full fledged UI widgets emplying HTML, CSS, and JavaScript.
 
 ### Rationale
 
