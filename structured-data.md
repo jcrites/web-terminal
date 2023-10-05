@@ -1,6 +1,10 @@
-### Richly Typed, Structured Data
+# WebTerminal
 
-WebTerminal commands will consume and produce structured data, similar to Nushell and PowerShell.
+This article is part of a series of design documents describing [WebTerminal](README.md).
+
+## Structured Data
+
+WebTerminal commands will consume and produce structured data (similar to Nushell and PowerShell).
 In its simplest form, we might think of this data as JSON.
 For example, a command like `ls` might produce the following data:
 
@@ -12,16 +16,49 @@ For example, a command like `ls` might produce the following data:
 ]
 ```
 
-#### Ion Types
+### Semantic Information
 
 Although we could use JSON as the underlying data format -- and we'll certainly support it -- we have the opportunity to consider
-and select a more powerful data format. JSON alone doesn't make it easy to process data semantically, per the requirements discussed above.
+and select a more powerful data format. JSON alone doesn't make it easy to process data semantically.
 
-WebTerminal will explore using [Amazon Ion](https://amazon-ion.github.io/ion-docs/) as its fundamental data format.
+Specifically, JSON data is untyped. Given a data structure like:
 
-Ion is a richly-typed, self-describing data format. Its text format is a superset of JSON, and extends JSON 
+```json
+{"name": "c.txt", "type":"file", "size": 8901, "modified": "2003-03-03"}
+```
+
+Then the value of the keys `name` and `modified` are both simply strings. The JSON data doesn't convey any semantic information about the fact that `name` is specifically a file name / file path, that `size` is a size in bytes, or that `modified` is a timestamp. Consequently, programs that process this output, such as the WebTerminal UI, do not have the opportunity to display these fields in intelligent ways.
+
+An intelligent display might prefer to display the timestamp like "1 year ago" or the size as "8 KiB"; but to do this, we need more semantic information than is present.
+
+### Amazon Ion
+
+WebTerminal will explore using [Amazon Ion](https://amazon-ion.github.io/ion-docs/) as its fundamental data format. We might express the output of the `ls` command in the following way using Ion.
+
+```ion
+[
+  { name: path::"a.txt", type: filetype::"file", size: bytes::1234, modified: 2001-01-01T},
+  { name: path::"b.txt", type: filetype::"file", size: bytes::4567, modified: 2002-02-02T},
+  { name: path::"c.txt", type: filetype::"file", size: bytes::8901, modified: 2003-03-03T},
+]
+```
+
+Ion is a richly-typed, self-describing data format. It is a superset of JSON, and extends JSON 
 with a type system that provides unambiguous semantics, as well as other features such as annotations, commtents,
-long strings, binary values, symbols, and more. Example Ion data types and values:
+long strings, binary values, symbols, and more.
+
+In the example above:
+
+* The `name` field contains an Ion `string` that is specifically described as a `path`
+* The `type` field contains a `string` of type `filetype`.
+* The `size` field contains an `int` of type `bytes`
+* The `modified` field contains an Ion `timestamp`.
+
+Because this semantic information is part of the data directly, it is possible for other programs such as the WebTerminal UI to take advantage of it. WebTerminal might, by default, display any `int::bytes` in a user friendly way like `10 MiB`; it might display any `timestamp` by default like `1 year ago`, and so on.
+
+#### Ion Types
+
+Some more detail about Ion data types:
 
 1. **`string`**. `"hello, world"`
 1. **`timestamp`**. `2003-12-01T`, `2010-03-22T18:00:00Z`, `2019-05-01T18:12:53.472-0800`
@@ -176,3 +213,17 @@ Additionally, the user might customize their environment by supplying their own 
     color: grey;
 }
 ```
+
+## Addendum: XML
+
+We could try to model this data more semantically using XML, perhaps like:
+
+```xml
+<file>
+    <name type="path">c.txt</name>
+    <size type="bytes">8901</size>
+    <modified type="timestamp">2003-03-03</modified>
+</file>
+```
+
+In this example, the `type="path"`, `type="bytes"`, `type="timestamp"` fields additionally characterize the semantic types of the data. XML is capable of conveying the necessary semantic information, but the format does not seem advantageous when compared to Amazon Ion.
