@@ -6,12 +6,3 @@ layout: home
 ---
 
 Hello, world!
-
-Some content.
-
-# Stuff
-## More stuff
-
-[About](about.markdown
-
-)
