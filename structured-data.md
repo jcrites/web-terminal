@@ -10,26 +10,68 @@ For example, a command like `ls` might produce the following data:
 
 ```json
 [
-  {"name": "a.txt", "type":"file", "size": 1234, "modified": "2001-01-01"},
-  {"name": "b.txt", "type":"file", "size": 4567, "modified": "2002-02-02"},
-  {"name": "c.txt", "type":"file", "size": 8901, "modified": "2003-03-03"}
+  {"name": "a.txt", "type":"file",      "size": 1234, "modified": "2001-01-01"},
+  {"name": "b.txt", "type":"file",      "size": 4567, "modified": "2002-02-02"},
+  {"name": "d",     "type":"directory", "size": 8901, "modified": "2003-03-03"}
 ]
 ```
 
-### Semantic Information
+*Although this JSON is a starting point, we'll likely end up in a different place. Read on.*
 
-Although we could use JSON as the underlying data format -- and we'll certainly support it -- we have the opportunity to consider
-and select a more powerful data format. JSON alone doesn't make it easy to process data semantically.
+### Extensibility
 
-Specifically, JSON data is untyped. Given a data structure like:
+WebTerminal's data layer is designed crucially with extensibility in mind.
+
+When programs produce data as output to WebTerminal, it will employ *general-purpose* rendering logic both to the overall shape of the data, and to indivudal elements. For example, WebTerminal might display the following JSON table as a table, based on its shape as a sequence of records:
 
 ```json
-{"name": "c.txt", "type":"file", "size": 8901, "modified": "2003-03-03"}
+[
+  {"name": "a.txt", "type":"file",      "size": 1234, "modified": "2020-01-01"},
+  {"name": "b.txt", "type":"file",      "size": 4567, "modified": "2021-02-02"},
+  {"name": "d",     "type":"directory", "size": 8901, "modified": "2022-03-03"}
+]
 ```
 
-Then the value of the keys `name` and `modified` are both simply strings. The JSON data doesn't convey any semantic information about the fact that `name` is specifically a file name / file path, that `size` is a size in bytes, or that `modified` is a timestamp. Consequently, programs that process this output, such as the WebTerminal UI, do not have the opportunity to display these fields in intelligent ways.
+WebTerminal by default will render this as a table (in HTML):
 
-An intelligent display might prefer to display the timestamp like "1 year ago" or the size as "8 KiB"; but to do this, we need more semantic information than is present.
+| name | type | size | modified |
+| --- | --- | --- | --- |
+| `a.txt` | `file` | `1234` | `2020-01-01` |
+| `b.txt` | `file` | `4567` | `2021-02-02`|
+| `d` | `directory` | `8901` | `2022-03-03` |
+
+**How WebTerminal does *not* work:** One could imagine a system like WebTerminal being designed such that every command like `ls` is built-in; such that WebTerminal knows about every such command and the precise format of its output. This is emphatically not how WebTerminal will work!
+
+### Semantic Information
+
+WebTerminal has a strong need for programs to produce structured data in a way that preserves semantic information. For more about how it will use semantics to drive hypermedia experiences, see [Richly Typed Hypermedia](#richly-typed-hypermedia).
+
+We will certainly need strong support for manipulating a variety of data formats like JSON, CSV, and others. However, these are not suitable as the *primary* data formats for programs that wish to integrate with and take advantage of WebTerminal's user experience.
+
+#### JSON is Insufficient
+
+The key problem is that JSON data is weakly-typed and provides no semantic information. Consider records produced as output by an `ls` command:
+
+```json
+{"name": "b.txt", "type":"file",      "size": 4567, "modified": "2002-02-02"},
+{"name": "d",     "type":"directory", "size": 8901, "modified": "2003-03-03"}
+```
+
+Some facts and observations:
+
+1. The fields `name`, `type`, and `modified` all simply contain JSON strings. The data itself contains no additional information beyond this.
+    
+    A human can infer that `name` contains a file name or path, that `type` represents a file type enumeration, and that `modified` represents a timestamp in 8601 format.
+2. The field `size` is a JSON number. Nothing more specific, such that it's an integer or a size in bytes.
+
+This presents a problem: humans  cannot determine these facts with confidence, and automated systems cannot employ this kind of reasoning. Consequently, programs that process the data have a limited ability to do so intelligently.
+
+If a program *did* understand the data semantically, then it might wish to, for example:
+
+1. Display all timestamps like `1 year ago` (instead of `2022-02-02`)
+2. Display file sizes like `8 KiB`
+
+There are numerous opportunities to enrich the display by using semantic information, which are discussed in further detail in [Richly Typed Hypermedia](#richly-typed-hypermedia).
 
 ### Amazon Ion
 
@@ -37,9 +79,9 @@ WebTerminal will explore using [Amazon Ion](https://amazon-ion.github.io/ion-doc
 
 ```ion
 [
-  { name: path::"a.txt", type: filetype::"file", size: bytes::1234, modified: 2001-01-01T},
-  { name: path::"b.txt", type: filetype::"file", size: bytes::4567, modified: 2002-02-02T},
-  { name: path::"c.txt", type: filetype::"file", size: bytes::8901, modified: 2003-03-03T},
+  { name: path::"a.txt", type: filetype::"file",      size: bytes::1234, modified: 2001-01-01T},
+  { name: path::"b.txt", type: filetype::"file",      size: bytes::4567, modified: 2002-02-02T},
+  { name: path::"d",     type: filetype::"directory", size: bytes::8901, modified: 2003-03-03T},
 ]
 ```
 
@@ -50,11 +92,17 @@ long strings, binary values, symbols, and more.
 In the example above:
 
 * The `name` field contains an Ion `string` that is specifically described as a `path`
-* The `type` field contains a `string` of type `filetype`.
+* The `type` field contains a `string` of type `filetype` (an enum of `file` and `directory`).
 * The `size` field contains an `int` of type `bytes`
 * The `modified` field contains an Ion `timestamp`.
 
 Because this semantic information is part of the data directly, it is possible for other programs such as the WebTerminal UI to take advantage of it. WebTerminal might, by default, display any `int::bytes` in a user friendly way like `10 MiB`; it might display any `timestamp` by default like `1 year ago`, and so on.
+
+However, a program can *still* interact with this data even if it doesn't understand the meaning of the augmented types like `string::path`, `string::filetype`, `int::bytes`, and `timestamp`: a program that doesn't care about these can ignore the `::path` annotation and access `name` and `type` as `string`s, and `size` as an `int`, and so on.
+
+Ion also offers a convenient, human-friendly textual representation (demonstrated above) that is just as convenient as JSON to work with. It also offers a compact, efficient binary format, and a way to convert between them. Alternative formats don't provide these capabilities.
+
+It is our belief that Ion offers a better user experience for essentially all use-cases than alternatives. We're open to being convinced of alternatives, but 
 
 #### Ion Types
 
@@ -96,9 +144,9 @@ Consider the hypothetical output of an `ls` command that we showed previously, f
 
 ```json
 [
-  {"name": "a.txt", "type":"file", "size": 1234, "modified": "2001-01-01"},
-  {"name": "b.txt", "type":"file", "size": 4567, "modified": "2002-02-02"},
-  {"name": "c.txt", "type":"file", "size": 8901, "modified": "2003-03-03"}
+  {"name": "a.txt", "type":"file",      "size": 1234, "modified": "2001-01-01"},
+  {"name": "b.txt", "type":"file",      "size": 4567, "modified": "2002-02-02"},
+  {"name": "d",     "type":"directory", "size": 8901, "modified": "2003-03-03"}
 ]
 ```
 
@@ -106,9 +154,9 @@ An Ion representation of this data in a WebTerminal environment might be:
 
 ```ion
 [
-  { name: path::"a.txt", type: filetype::"file", size: bytes::1234, modified: 2001-01-01T},
-  { name: path::"b.txt", type: filetype::"file", size: bytes::4567, modified: 2002-02-02T},
-  { name: path::"c.txt", type: filetype::"file", size: bytes::8901, modified: 2003-03-03T},
+  { name: path::"a.txt", type: filetype::"file",      size: bytes::1234, modified: 2001-01-01T},
+  { name: path::"b.txt", type: filetype::"file",      size: bytes::4567, modified: 2002-02-02T},
+  { name: path::"d",     type: filetype::"directory", size: bytes::8901, modified: 2003-03-03T},
 ]
 ```
 
@@ -214,7 +262,46 @@ Additionally, the user might customize their environment by supplying their own 
 }
 ```
 
-## Addendum: XML
+## Ion Alternatives
+
+### JSON
+
+We discussed in [Semantic Information](#semantic-information) why JSON is insufficient alone to express the semantic information we require in program outputs, and why we need Ion. Example `ls` output:
+
+```ion
+[
+  { name: path::"a.txt", type: filetype::"file",      size: bytes::1234, modified: 2001-01-01T},
+  { name: path::"b.txt", type: filetype::"file",      size: bytes::4567, modified: 2002-02-02T},
+  { name: path::"d",     type: filetype::"directory", size: bytes::8901, modified: 2003-03-03T},
+]
+```
+
+One could argue that we *can* find a way to represent this in JSON, but it will be tortured and have significant advantages. For example, we could devise a custom JSON format that preserves this semantic information, by making every "value" a structure with a value `v` and type `t`:
+
+```json
+[
+  {
+    "name": {"v": "a.txt", "t":"string::path"},
+    "type": {"v": "file", "t":"string::filetype"},
+    "size": {"v": 1234, "t":"int::bytes"},
+    "modified": {"v": "2001-01-01T", "t": "timestamp"},
+  },
+  {
+    "name": {"v": "b.txt", "t":"string::path"},
+    "type": {"v": "file", "t":"string::filetype"},
+    "size": {"v": 4567, "t":"int::bytes"},
+    "modified": {"v": "2002-02-02T", "t": "timestamp"},
+  },
+  {
+    "name": {"v": "d", "t":"string::path"},
+    "type": {"v": "directory", "t":"string::filetype"},
+    "size": {"v": 1234, "t":"int::bytes"},
+    "modified": {"v": "2003-03-03T", "t": "timestamp"},
+  },
+]
+```
+
+### XML
 
 We could try to model this data more semantically using XML, perhaps like:
 

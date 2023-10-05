@@ -4,7 +4,7 @@
 
 **Author:** [Justin Crites](https://github.com/jcrites) ([HN](https://news.ycombinator.com/user?id=jcrites))
 **Status:** Draft
-**Version:** 1.3.3 (2023-10-04 14:31:00 PDT)
+**Version:** 1.4.1 (2023-10-05 13:58:00 PDT)
 
 ### Elevator Pitch (TL;DR)
 
