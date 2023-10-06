@@ -66,4 +66,4 @@ WebTerminal will likely be a [NodeJS](https://nodejs.org/en) application that us
 
 ## Next
 
-The next article in this series [Structured Data](structured-data), discusses the data formats that WebTerminal will use, and how they will drive its hypermedia experience.
+The next article in this series [Structured Data](web-terminal/structured-data), discusses the data formats that WebTerminal will use, and how they will drive its hypermedia experience.

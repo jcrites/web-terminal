@@ -65,7 +65,7 @@ Some of our goals for the WebTerminal user experience, which place requirements 
 
 Many additional forms of intelligence are desirable and possible with a strong semantic understanding of data.
 
-The article [Structured Hypermedia](structured-hypermedia) discusses how we will specifically achieve these goals using our structured data.
+The article [Structured Hypermedia](web-terminal/structured-hypermedia) discusses how we will specifically achieve these goals using our structured data.
 
 #### Non-Solutions
 
@@ -149,7 +149,7 @@ It is our belief that Ion offers a better user experience for essentially all us
 
 ## Next
 
-The next article, [Structured Hypermedia](structured-hypermedia) the series discusses how this structured data will drive WebTerminal's hypermedia experience.
+The next article, [Structured Hypermedia](web-terminal/structured-hypermedia) the series discusses how this structured data will drive WebTerminal's hypermedia experience.
 
 ## Appendix: Ion Alternatives
 

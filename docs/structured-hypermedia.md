@@ -8,7 +8,7 @@ description: "How richly-typed structured data will drive the hypermedia experie
 
 ### Richly Typed Hypermedia
 
-Consider the proposed output of a WebTerminal command like `ls` (discussed in [Structured Data](structured-data)):
+Consider the proposed output of a WebTerminal command like `ls` (discussed in [Structured Data](web-terminal/structured-data)):
 
 ```ion
 [
