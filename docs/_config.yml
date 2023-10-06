@@ -34,6 +34,11 @@ github_username:  jcrites
 
 categories: [webterminal]
 
+# Prefix headers with header-
+kramdown:
+  auto_ids: true
+  auto_id_prefix: 'header-'
+
 # Build settings
 theme: minima
 plugins:

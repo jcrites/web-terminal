@@ -3,21 +3,23 @@ layout: page
 title: "Structured Data"
 date: 2023-10-05 23:21 +0000
 categories: [webterminal]
-description: "How commands will use richly-typed, structured data to drive the hypermedia experience"
+description: "How WebTerminal will employ richly-typed, structured data"
 ---
 
 # WebTerminal
 
-This article is part of a series of design documents describing WebTerminal. Consider starting with the [Introduction](introduction).
+This article is part of a series of design documents describing WebTerminal. Consider starting with the [Introduction](introduction). The next article after this one is [Hypermedia](hypermedia).
 
 ## Structured Data
 
 [^1]: Similar to Nushell and PowerShell
 
-WebTerminal commands will consume and produce structured data [^1].
+The WebTerminal shell will manipulate structured data [^1].
 The simplest form of this structured data might be JSON.
 
-A command like `ls` in WebTerminal might produce the following raw data:
+A command like `ls` [^2] might produce the following raw data:
+
+[^2]: The WebTerminal version of `ls`; not the GNU coreutils version.
 
 ```json
 [
@@ -42,11 +44,11 @@ For example, WebTerminal might render raw JSON data above as an HTML table, mapp
 | `b.txt` | `file` | `4567` | `2021-02-02`|
 | `d` | `directory` | `8901` | `2022-03-03` |
 
-WebTerminal's shell and UI will provide powerful general capabilities for working with structured data, similar to Nushell. (See [Nushell: Working with Tables](https://www.nushell.sh/book/working_with_tables.html)). However, whereas Nushell renders data using ASCII characters, WebTerminal will generally render them with HTML.
-
 ### The need for Semantic Data
 
-Although WebTerminal is capable of displaying any raw structured data, we believe the default experience must be more intelligent. Given the data above, we seek for WebTerminal's default display experience to be something like:
+Although WebTerminal is capable of displaying any raw structured data, [similar to Nushell's table handling](https://www.nushell.sh/book/working_with_tables.html), we believe the default experience must be more intelligent.
+
+Given the JSON data above, WebTerminal's default display experience will be something like:
 
 | name | type | size | modified |
 | --- | --- | --- | --- |
@@ -56,7 +58,7 @@ Although WebTerminal is capable of displaying any raw structured data, we believ
 
 #### UX Goals driven by Semantic Data
 
-Some of our goals for the WebTerminal user experience, which place requirements on our data formats, include:
+Specifically, our goals for WebTerminal's display of this data:
 
 1. It will understand that `a.txt` and `b.txt` are file paths, and will provide contextual intelligence. For example, if the user clicks on a file name, WebTerminal should provide a popup menu with options like "Open File" and "Copy Absolute Path".
 2. It may know that the `type` column represents an enumeration, and that `file` and `directory` are the two possible values.
@@ -65,7 +67,7 @@ Some of our goals for the WebTerminal user experience, which place requirements 
 
 Many additional forms of intelligence are desirable and possible with a strong semantic understanding of data.
 
-The article [Structured Hypermedia](web-terminal/structured-hypermedia) discusses how we will specifically achieve these goals using our structured data.
+The article [Hypermedia](hypermedia) discusses how we will specifically achieve our user experience goals by preserving structured data in hypermedia.
 
 #### Non-Solutions
 

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Structured Hypermedia"
+title: "Hypermedia"
 date: 2023-10-06 11:52 -0700
 categories: [webterminal]
 description: "How richly-typed structured data will drive the hypermedia experience"
@@ -8,7 +8,7 @@ description: "How richly-typed structured data will drive the hypermedia experie
 
 ### Richly Typed Hypermedia
 
-Consider the proposed output of a WebTerminal command like `ls` (discussed in [Structured Data](web-terminal/structured-data)):
+Consider the proposed output of a WebTerminal command like `ls` (discussed in [Structured Data](structured-data)):
 
 ```ion
 [
