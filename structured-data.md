@@ -4,9 +4,10 @@ This article is part of a series of design documents describing [WebTerminal](RE
 
 ## Structured Data
 
-WebTerminal commands will consume and produce structured data (similar to Nushell and PowerShell).
-In its simplest form, we might think of this data as JSON.
-For example, a command like `ls` might produce the following data:
+WebTerminal commands will consume and produce structured data [^1].
+The simplest form of this structured data might be JSON.
+
+A command like `ls` in WebTerminal might produce the following raw data:
 
 ```json
 [
@@ -16,23 +17,14 @@ For example, a command like `ls` might produce the following data:
 ]
 ```
 
-*Although this JSON is a starting point, we'll likely end up in a different place. Read on.*
+As we'll discuss below, JSON alone will not be sufficient to meet WebTerminal's needs, but it is a starting point.
 
 ### Extensibility
 
-WebTerminal's data layer is designed crucially with extensibility in mind.
+WebTerminal's data layer is crucially designed with extensibility in mind.
+One type of extensibility is separation of concerns: most programs only need to be concerned with producing structured data as their output, and need not concern themselves with how it's presented to the user. WebTerminal will render the structured data in a way that makes sense for the user, given user preferences and context.
 
-When programs produce data as output to WebTerminal, it will employ *general-purpose* rendering logic both to the overall shape of the data, and to indivudal elements. For example, WebTerminal might display the following JSON table as a table, based on its shape as a sequence of records:
-
-```json
-[
-  {"name": "a.txt", "type":"file",      "size": 1234, "modified": "2020-01-01"},
-  {"name": "b.txt", "type":"file",      "size": 4567, "modified": "2021-02-02"},
-  {"name": "d",     "type":"directory", "size": 8901, "modified": "2022-03-03"}
-]
-```
-
-WebTerminal by default will render this as a table (in HTML):
+For example, WebTerminal might render this JSON data as a table, mapping JSON fields to table columns.
 
 | name | type | size | modified |
 | --- | --- | --- | --- |
@@ -40,61 +32,82 @@ WebTerminal by default will render this as a table (in HTML):
 | `b.txt` | `file` | `4567` | `2021-02-02`|
 | `d` | `directory` | `8901` | `2022-03-03` |
 
-**How WebTerminal does *not* work:** One could imagine a system like WebTerminal being designed such that every command like `ls` is built-in; such that WebTerminal knows about every such command and the precise format of its output. This is emphatically not how WebTerminal will work!
+The type of experience we'd like for generalized structured data in WebTerminal is similar to the Nushell experience working with tables. See [Nushell: Working with Tables](https://www.nushell.sh/book/working_with_tables.html). Whereas Nushell renders in the terminal using ASCII characters, WebTerminal will generally render them with HTML. With this approach, WebTerminal can render any general-purpose structured data in a reasonably useful way.
 
-### Semantic Information
+### The need for Semantic Data
 
-WebTerminal has a strong need for programs to produce structured data in a way that preserves semantic information. For more about how it will use semantics to drive hypermedia experiences, see [Richly Typed Hypermedia](#richly-typed-hypermedia).
+We can provide a substantially better, more specific user experience by incorporating additional semantics into the data itself. We have loftier goals for the WebTerminal user experience of running `ls`.
 
-We will certainly need strong support for manipulating a variety of data formats like JSON, CSV, and others. However, these are not suitable as the *primary* data formats for programs that wish to integrate with and take advantage of WebTerminal's user experience.
+Given a potential raw display of the output:
+
+| name | type | size | modified |
+| --- | --- | --- | --- |
+| `a.txt` | `file` | `1234` | `2020-01-01` |
+| `b.txt` | `file` | `4567` | `2021-02-02`|
+| `d` | `directory` | `8901` | `2022-03-03` |
+
+We have the following goals for the WebTerminal user experience:
+
+1. It will understand that `a.txt` and `b.txt` are files (file names), and will be capable of providing contextual intelligence. For example, if the user clicks on a file name, WebTerminal should provide a popup menu with options like "Open File" and "Copy Absolute Path".
+2. It may know that the `type` column represents an enumeration, and that `file` and `directory` are the two possible values.
+3. It will understand that the `size` column contains sizes in bytes. It can display them in a human-friendly way like `1 KiB` instead of `1234`. A user can click an icon in the table header and toggle human-friendly display on and off. If the user clicks on the file size and selects "Copy", then the clipboard will copy the raw value `1234`. 
+4. It will understand that the `modified` column contains timestamps, and will display them in a human-friendly way like `1 year ago` instead of `2022-03-03`. Like with file sizes, the user can toggle this on and off and copy raw values.
+
+Many additional forms of intelligence are desirable and possible with a strong semantic understanding of data.
+
+#### Non-Solution
+
+What we *aren't* going to do is build logic into WebTerminal that directly understands the type of data produced as output from every command like `ls`. This approach could certainly work: WebTerminal could be aware of each such command, and aware of the schema of its output data. With this knowledge, WebTerminal could parse fields of JSON output and overlay semantics onto them.
+
+However, this approach is not extensible. It's not desirable for WebTerminal to need to know about every command that might be run and its data schema. We seek a stronger solution where extensibility is an automatic or emergent property of the design.
+
+(To clarify, we may indeed support just such an approach of overlaying semantics onto the output of existing programs. This will be advantageous for supporting existing popular programs that users want to use, that have not themselves been integrate with WebTerminal. However, we want to raise the bar for what's possible in developing and using command-line programs: we seek an approach that is inherently flexible and extensible.)
 
 #### JSON is Insufficient
 
-The key problem is that JSON data is weakly-typed and provides no semantic information. Consider records produced as output by an `ls` command:
+We can't effectively raise the bar on user experience if programs output structured data using JSON. JSON is weakly-typed and provides no semantic information. Consider the hypothetical JSON output of an `ls` command:
 
 ```json
 {"name": "b.txt", "type":"file",      "size": 4567, "modified": "2002-02-02"},
 {"name": "d",     "type":"directory", "size": 8901, "modified": "2003-03-03"}
 ```
 
-Some facts and observations:
+This format presents a number of obstacles, such as:
 
-1. The fields `name`, `type`, and `modified` all simply contain JSON strings. The data itself contains no additional information beyond this.
-    
-    A human can infer that `name` contains a file name or path, that `type` represents a file type enumeration, and that `modified` represents a timestamp in 8601 format.
+1. The fields `name`, `type`, and `modified` all simply contain JSON strings. The data itself contains no additional information beyond this. A human can make inferences about what these contain, but not a machine.
 2. The field `size` is a JSON number. Nothing more specific, such that it's an integer or a size in bytes.
 
-This presents a problem: humans  cannot determine these facts with confidence, and automated systems cannot employ this kind of reasoning. Consequently, programs that process the data have a limited ability to do so intelligently.
-
-If a program *did* understand the data semantically, then it might wish to, for example:
-
-1. Display all timestamps like `1 year ago` (instead of `2022-02-02`)
-2. Display file sizes like `8 KiB`
-
-There are numerous opportunities to enrich the display by using semantic information, which are discussed in further detail in [Richly Typed Hypermedia](#richly-typed-hypermedia).
+We seek a data format that programs can use with WebTerminal that fully conveys all relevant semantic information. With this semantic information, we there are many opportunities to enrich the user experience, discussed in in [Richly Typed Hypermedia](#richly-typed-hypermedia).
 
 ### Amazon Ion
 
-WebTerminal will explore using [Amazon Ion](https://amazon-ion.github.io/ion-docs/) as its fundamental data format. We might express the output of the `ls` command in the following way using Ion.
+WebTerminal will explore using [Amazon Ion](https://amazon-ion.github.io/ion-docs/) as its fundamental data format. Ion offers a number of advantages over alternative formats that we will discuss. Ion is a richly-typed, self-describing data format that extends JSON with precise types, annotations, symbols, binary values, and more. Using Ion, an `ls` program might produce the following output:
 
 ```ion
 [
-  { name: path::"a.txt", type: filetype::"file",      size: bytes::1234, modified: 2001-01-01T},
-  { name: path::"b.txt", type: filetype::"file",      size: bytes::4567, modified: 2002-02-02T},
-  { name: path::"d",     type: filetype::"directory", size: bytes::8901, modified: 2003-03-03T},
+  {
+    name: path::"a.txt",
+    type: filetype::"file",
+    size: bytes::1234,
+    modified: 2001-01-01T
+  },
+  {
+    name: path::"b.txt",
+    type: filetype::"file",
+    size: bytes::4567,
+    modified: 2002-02-02T
+  }, // ...
 ]
 ```
 
-Ion is a richly-typed, self-describing data format. It is a superset of JSON, and extends JSON 
-with a type system that provides unambiguous semantics, as well as other features such as annotations, commtents,
-long strings, binary values, symbols, and more.
+The Ion representation contains data with more precision and with semantic information that is not available in JSON:
 
-In the example above:
+1. The `name` field contains an Ion `string` with with annotation `path`.
+2. The `type` field contains a `string` with the annotation `filetype` (an enum of `file` and `directory`).
+3. The `size` field contains an Ion `int` with the annotation `bytes`.
+4. The `modified` field contains an Ion `timestamp`.
 
-* The `name` field contains an Ion `string` that is specifically described as a `path`
-* The `type` field contains a `string` of type `filetype` (an enum of `file` and `directory`).
-* The `size` field contains an `int` of type `bytes`
-* The `modified` field contains an Ion `timestamp`.
+Ion isn't limited to representing only strings and numbers; it can express a [variety of data types](#ion-types) described below.
 
 Because this semantic information is part of the data directly, it is possible for other programs such as the WebTerminal UI to take advantage of it. WebTerminal might, by default, display any `int::bytes` in a user friendly way like `10 MiB`; it might display any `timestamp` by default like `1 year ago`, and so on.
 
