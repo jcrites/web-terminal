@@ -5,7 +5,6 @@ $(document).ready(function() {
         var id = $(this).attr('id');
         if (id) {
             var anchor = $('<a/>').addClass('anchor').attr('href', '#' + id).text('#');
-            $(this).append(' ');
             $(this).append(anchor);
         }
     });
