@@ -29,7 +29,7 @@ A command like `ls` [^2] might produce the following raw data:
 ]
 ```
 
-*(As we'll discuss below, JSON alone will not be sufficient to meet WebTerminal's needs, but it is a starting point for understanding our approach.)*
+We can do better than this. As we'll discuss below, JSON alone will not be sufficient to meet WebTerminal's needs, but it is a starting point for understanding our approach.
 
 ### Extensibility
 
