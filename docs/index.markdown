@@ -12,7 +12,7 @@ A full (unordered) list of articles is below. We recommend starting with [Introd
 <ul>
 {% for page in site.pages %}
   {% if page.categories contains 'webterminal' %}
-    <li style="margin-bottom: 0.5em;"><a href="{{page.url}}" style="font-weight: bold;">{{ page.title }}</a>. {{page.description}}</li>
+    <li style="margin-bottom: 0.5em;"><a href="{{page.url | relative_url}}" style="font-weight: bold;">{{ page.title }}</a>. {{page.description}}</li>
   {% endif %}
 {% endfor %}
 </ul>
