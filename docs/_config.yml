@@ -24,10 +24,10 @@ description: >- # this means to ignore newlines until "baseurl:"
   WebTerminal is a complete re-imagining of the command-line environment,
   designing it from the ground up to take full advantage of browser technology.
   This documentation captures the product vision, requirements, and design.
-baseurl: ""
-#baseurl: "web-terminal" # the subpath of your site, e.g. /blog
-url: ""
-#url: "https://jcrites.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+#baseurl: ""
+baseurl: "web-terminal" # the subpath of your site, e.g. /blog
+#url: ""
+url: "https://jcrites.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 #twitter_username: jcrites
 github_username:  jcrites
