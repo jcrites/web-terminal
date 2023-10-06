@@ -1,3 +1,11 @@
+---
+layout: page
+title: "Shell Language"
+date: 2023-10-06 10:32 -0700
+categories: [webterminal]
+description: "The experience of WebTerminal's interactive shell language"
+---
+
 # WebTerminal
 
 This is a design and requirements document for the shell language of [WebTerminal](README.md).

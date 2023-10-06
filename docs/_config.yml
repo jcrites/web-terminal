@@ -32,6 +32,8 @@ url: "https://jcrites.github.io" # the base hostname & protocol for your site, e
 #twitter_username: jcrites
 github_username:  jcrites
 
+categories: [webterminal]
+
 # Build settings
 theme: minima
 plugins:
